@@ -16,6 +16,7 @@ object Build extends Build {
 	val scalaVer12  = "2.12.0"
 
 	lazy val basicSettings = Seq(
+    version := "5.0.4-LF",
 		organization 				:= "co.blocke",
 		startYear 					:= Some(2015),
 		scalaVersion 				:= scalaVer,
@@ -41,7 +42,7 @@ object Build extends Build {
 		.settings(basicSettings: _*)
 		.settings(publishArtifact := false)
 		.settings(publish := { })
-		.aggregate(scalajack, scalajack_dynamodb, scalajack_mongo)
+		.aggregate(scalajack, scalajack_mongo)
 		// For gpg might need this too:
 		//publishTo := Some(Resolver.file("Unused transient repository", file("target/unusedrepo")))
 
@@ -62,14 +63,6 @@ object Build extends Build {
 			compile(scala_reflect) ++
 			test(scalatest)
 		)
-
-	lazy val scalajack_dynamodb = project.in(file("dynamodb"))
-		.settings(basicSettings: _*)
-		.settings(pubSettings: _*)
-		.settings(libraryDependencies ++=
-			compile( dynamo ) ++
-			test( scalatest, slf4j_simple )
-		).dependsOn( scalajack )
 
 	lazy val scalajack_mongo = project.in(file("mongo"))
 		.settings(basicSettings: _*)
@@ -102,16 +95,14 @@ object Dependencies {
 		"Typesafe Snapshots"	at "http://repo.typesafe.com/typesafe/snapshots/",
 		"OSS"					at "http://oss.sonatype.org/content/repositories/releases",
 		"OSS Staging"			at "http://oss.sonatype.org/content/repositories/staging",
-		"PhantomMvn"			at "http://maven.websudos.co.uk/ext-release-local",
 		"Mvn" 					at "http://mvnrepository.com/artifact"  // for commons_exec
 	)
 
 	def compile   (deps: ModuleID*): Seq[ModuleID] = deps map (_ % "compile")
-	def test      (deps: ModuleID*): Seq[ModuleID] = deps map (_ % "test") 
+	def test      (deps: ModuleID*): Seq[ModuleID] = deps map (_ % "test")
 
 	val scala_reflect 	= "org.scala-lang"			% "scala-reflect"		  % Build.scalaVer
 	val mongo_scala     = "org.mongodb.scala"       %% "mongo-scala-driver"   % "1.1.0"
 	val scalatest 		= "org.scalatest" 			%% "scalatest"			  % "3.0.0"
 	val slf4j_simple 	= "org.slf4j" 				% "slf4j-simple" 		  % "1.7.7"
-	val dynamo          = "com.amazonaws"           % "aws-java-sdk-dynamodb" % "1.11.43"
 }
